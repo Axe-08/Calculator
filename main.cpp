@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
 #include <windows.h>
+#include "inline_arithmatic.cpp"
 
 using namespace std;
 namespace oper
@@ -52,37 +53,7 @@ namespace oper
     {
         void arithmatics()
         {
-
-            cout << "ARITHMATIC:\n";
-            float a, b;
-            char c;
-            cin >> a >> c >> b;
-            switch (c)
-            {
-            case '+':
-                cout << a + b << endl;
-                break;
-
-            case '-':
-                cout << a - b << endl;
-                break;
-
-            case '*':
-                cout << a * b << endl;
-                break;
-
-            case '/':
-                cout << a / b << endl;
-                break;
-
-            case '^':
-                cout << pow(a, b) << endl;
-                break;
-
-            default:
-                cout << "enter valid input" << endl;
-                break;
-            }
+            arith();
         }
     }
 

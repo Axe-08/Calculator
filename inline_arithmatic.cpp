@@ -1,3 +1,12 @@
+// change calculation base to float to accomodate decimals (done)
+// figure out modulus operation on float (done)
+// idea: try mathmetical manipulation like conting most decimal places of them and use some shenegans(done)
+
+
+//decimal handling fix it!!!(done)
+
+//debug for long expressions
+
 #include <iostream>
 #include <vector>
 #include <cmath>
@@ -12,7 +21,7 @@ bool isNum(char c)
 
 bool isOperator(char c)
 {
-    return c == '+' || c == '-' || c == '*' || c == '/' || c == '%' || c == '~';
+    return c == '+' || c == '-' || c == '*' || c == '/' || c == '%' || c == '~' || c == '.';
 }
 
 bool isOpenBracket(char c)
@@ -41,7 +50,7 @@ int isValidBracketPlacement(const string &line)
         return -1;
 }
 
-string LongToString_mod(long long_num)
+string LongToString_mod(float long_num)
 {
     stack<char> stringStack;
     string signValue = "";
@@ -54,29 +63,20 @@ string LongToString_mod(long long_num)
         long_num = -long_num;
     }
 
+
+    string long_to_string = to_string(long_num);
+
     // while number is greater than 0, get last digit from it
     // and convert it to character by adding '0' to it, and
     // push to the stack.
-    while (long_num > 0)
-    {
-        char convertedDigit = long_num % 10 + '0';
-        stringStack.push(convertedDigit);
-        long_num /= 10;
-    }
-
-    string long_to_string = "";
+    
 
     // while stack is not empty pop the character one by one
     // and append to the resultant string.
-    while (!stringStack.empty())
-    {
-        long_to_string += stringStack.top();
-        stringStack.pop();
-    }
-
     // return the resulatant string value by appending
     // singValue to it
-    return signValue + long_to_string;
+    return signValue + long_to_string + "~";
+
 }
 
 void pseudoLine(const string &line, string &newline)
@@ -101,7 +101,7 @@ void pseudoLine(const string &line, string &newline)
         {
             newline.push_back(line[i]);
             // Add '~' to represent the end of a number if the next character is not a digit
-            if (i + 1 == line.size() || !isNum(line[i + 1]))
+            if (i + 1 == line.size() || (!isNum(line[i + 1])&&line[i+1]!='.'))
             {
                 newline.push_back('~');
             }
@@ -111,9 +111,10 @@ void pseudoLine(const string &line, string &newline)
             newline.push_back(line[i]);
         }
     }
+
 }
 
-long long int evaluate(const string &postfix);
+float evaluate(const string &postfix);
 
 void bracketSolver(string &brackline)
 {
@@ -131,7 +132,7 @@ void bracketSolver(string &brackline)
             }
 
             string s1 = brackline.substr(start_brack, end_brack - start_brack + 1);
-            long long int x = evaluate(s1);
+            float x = evaluate(s1);
             string s2 = LongToString_mod(x);
 
             string s3;
@@ -184,7 +185,7 @@ string convert(const string &xline)
     while (line[i] != '\0')
     {
         char c = line[i];
-        if (isNum(c) || c == '_')
+        if (isNum(c) || c == '_' ||c =='.')
         {
             postfix.push_back(c);
         }
@@ -212,11 +213,12 @@ string convert(const string &xline)
         s1.pop();
     }
     return postfix;
+  
 }
 
-long long int evaluate(const string &postfix)
+float evaluate(const string &postfix)
 {
-    stack<long long int> x;
+    stack<float> x;
     int i = 0;
     while (postfix[i] != '\0')
     {
@@ -229,7 +231,7 @@ long long int evaluate(const string &postfix)
             {
                 v++;
             }
-            x.push(-1 * stoi(postfix.substr(i, v - i)));
+            x.push(-1 * stof(postfix.substr(i, v - i)));
             i = v;
         }
         else if (isNum(op))
@@ -239,14 +241,14 @@ long long int evaluate(const string &postfix)
             {
                 v++;
             }
-            x.push(stoi(postfix.substr(i, v - i)));
+            x.push(stof(postfix.substr(i, v - i)));
             i = v;
         }
         else
         {
-            long long int op1 = x.top();
+            float op1 = x.top();
             x.pop();
-            long long int op2 = x.top();
+            float op2 = x.top();
             x.pop();
             switch (op)
             {
@@ -254,10 +256,15 @@ long long int evaluate(const string &postfix)
                 x.push(op1 * op2);
                 break;
             case '/':
-                x.push(op2 / op1);
+                if (op1 != 0)
+                    x.push(op2 / op1);
+                else
+                {
+                    exit(EXIT_SUCCESS);
+                }
                 break;
             case '%':
-                x.push(op2 % op1);
+                x.push(fmod(op2, op1));
                 break;
             case '+':
                 x.push(op1 + op2);
@@ -274,7 +281,7 @@ long long int evaluate(const string &postfix)
     return x.top();
 }
 
-int main()
+void arith()
 {
     string line;
     cout << "Enter Expression" << endl;
@@ -285,5 +292,4 @@ int main()
         cout << "Result:" << endl;
         cout << evaluate(postfix) << endl;
     }
-    return 0;
 }
